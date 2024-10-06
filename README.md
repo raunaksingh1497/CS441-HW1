@@ -14,6 +14,7 @@ To compile and run the project using SBT, use the following commands:
 ```bash
 sbt clean compile test
 sbt clean compile run
+```
 
 Here’s a refined README.md based on the information provided:
 
