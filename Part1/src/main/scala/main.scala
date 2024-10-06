@@ -28,19 +28,6 @@ object MainApp {
         System.exit(1) // Exit if the TokenizerDriver fails
     }
 
-    // Call CsvJobDriver after TokenizerDriver completes
-    /*
-    try {
-      logger.info("Running CsvJobDriver...")
-      CsvJobDriver.main(Array()) // Call CsvJobDriver without any parameters
-      logger.info("CsvJobDriver completed successfully.")
-    } catch {
-      case e: Exception =>
-        logger.error("Error running CsvJobDriver: {}", e.getMessage)
-        System.exit(1) // Exit if the CsvJobDriver fails
-    }
-    */
-
     // Call Word2VecDriver after CsvJobDriver completes
     try {
       logger.info("Running Word2VecDriver...")
