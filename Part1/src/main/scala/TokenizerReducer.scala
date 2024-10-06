@@ -2,42 +2,35 @@ import java.io.IOException
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.Reducer
 import play.api.libs.json.Json
+import org.slf4j.{Logger, LoggerFactory}
 import scala.collection.JavaConverters._
-import java.io.{BufferedWriter, OutputStreamWriter}
-import org.apache.hadoop.fs.{FileSystem, Path}
 
 class TokenizerReducer extends Reducer[Text, Text, Text, Text] {
-  private var csvData: List[String] = List()
+  private val logger: Logger = LoggerFactory.getLogger(classOf[TokenizerReducer]) // Initialize logger
+  private var allTokenizedSentences: List[List[Int]] = List()
 
   @throws[IOException]
   @throws[InterruptedException]
   override def reduce(key: Text, values: java.lang.Iterable[Text], context: Reducer[Text, Text, Text, Text]#Context): Unit = {
-    // Get the list of tokenized strings
-    val tokens = values.asScala.toList
+    logger.info(s"Reducing key: ${key.toString}")
 
-    // Count frequency (number of tokens)
-    val frequency = tokens.length
+    // Collect all tokenized sentences for each key
+    values.asScala.foreach { sentence =>
+      val tokenizedSentence: List[Int] = sentence.toString.split(" ").toList.map(_.toInt)
+      allTokenizedSentences = allTokenizedSentences :+ tokenizedSentence
+      logger.debug(s"Tokenized sentence added: $tokenizedSentence") // Log each tokenized sentence added
+    }
 
-    // Create CSV line
-    val csvLine = s"${key.toString},${tokens.mkString(" ")},$frequency"
-    csvData = csvData :+ csvLine
+    logger.info(s"Total tokenized sentences collected for key '${key.toString}': ${allTokenizedSentences.size}")
   }
 
   override def cleanup(context: Reducer[Text, Text, Text, Text]#Context): Unit = {
-    // Write the CSV output
-    val fs = FileSystem.get(context.getConfiguration)
-    val csvOutputPath = new Path("s3://hw1-raunak/output.csv")
-    val csvStream = fs.create(csvOutputPath)
-    val writer = new BufferedWriter(new OutputStreamWriter(csvStream))
+    // Convert the entire list of lists to JSON after the reduce phase
+    val jsonOutput = Json.stringify(Json.toJson(allTokenizedSentences))
 
-    // Write CSV headers
-    writer.write("Word,Token,Frequency\n")
+    // Write the final JSON output as a single string
+    context.write(null, new Text(jsonOutput))
 
-    // Write CSV data
-    csvData.foreach { line =>
-      writer.write(line + "\n")
-    }
-
-    writer.close()
+    logger.info(s"Final JSON output written for key: ${jsonOutput.take(100)}...") // Log the start of the JSON output (first 100 characters)
   }
 }

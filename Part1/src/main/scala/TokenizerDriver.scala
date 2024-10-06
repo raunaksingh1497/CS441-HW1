@@ -1,44 +1,49 @@
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.hadoop.io.{LongWritable, Text}
+import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
+import org.slf4j.{Logger, LoggerFactory}
 
 object TokenizerDriver {
+  private val logger: Logger = LoggerFactory.getLogger(TokenizerDriver.getClass)
+
   def Tokenize(args: Array[String]): Unit = {
-    if (args.length < 2) {
-      println("Usage: TokenizerDriver <inputPath> <outputPath>")
+    if (args.length < 3) {
+      logger.error("Usage: TokenizerDriver <inputPath> <outputPath> <csvOutputPath>")
       System.exit(1)
     }
 
     val inputPath = args(0)
     val outputPath = args(1)
+    val csvOutputPath = args(2)
 
-    // Print input paths
-    println(s"Input path: $inputPath")
-    println(s"Output path: $outputPath")
+    // Log input paths
+    logger.info(s"Input path: $inputPath")
+    logger.info(s"Output path: $outputPath")
+    logger.info(s"CSV output path: $csvOutputPath")
 
     val conf = new Configuration()
-    conf.set("fs.defaultFS", "s3://hw1-raunak") // Ensure the default filesystem is set
-
     val job = Job.getInstance(conf, "Tokenization")
+    conf.set("fs.defaultFS", "s3://hw1-raunak")
+
     job.setJarByClass(classOf[TokenizerMapper])
     job.setMapperClass(classOf[TokenizerMapper])
     job.setReducerClass(classOf[TokenizerReducer])
 
     job.setOutputKeyClass(classOf[Text])
-    job.setOutputValueClass(classOf[Text])
+    job.setOutputValueClass(classOf[Text])  // Mapper and Reducer both output Text
 
     FileInputFormat.addInputPath(job, new Path(inputPath))
     FileOutputFormat.setOutputPath(job, new Path(outputPath))
 
-    // Print job status
-    println("Starting the job...")
+    // Log job status
+    logger.info("Starting the job...")
     if (job.waitForCompletion(true)) {
-      println("Job completed successfully.")
+      logger.info("Job completed successfully.")
     } else {
-      println("Job failed.")
+      logger.error("Job failed.")
       System.exit(1)
     }
   }
