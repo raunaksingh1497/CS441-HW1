@@ -23,6 +23,7 @@ object SparkLLMTraining {
       .setAppName("DL4J-LanguageModel-Spark")
       .setMaster("local[*]")
       .set("spark.local.dir", "/Users/ronny/tmp/spark")
+      .set("spark.hadoop.fs.defaultFS", "file:///") // Use local filesystem
 
     new JavaSparkContext(sparkConf)
   }
@@ -58,9 +59,6 @@ object SparkLLMTraining {
     val model: MultiLayerNetwork = new MultiLayerNetwork(conf)
     model.init()
 
-    // Set the custom gradient norm logger
-//    model.setListeners(new GradientNormLogger(1))
-
     val trainingMaster = new ParameterAveragingTrainingMaster.Builder(32)
       .averagingFrequency(5)
       .batchSizePerWorker(32)
@@ -75,26 +73,13 @@ object SparkLLMTraining {
     // Define number of epochs
     val numEpochs = 5
 
-    // Lists to store training loss and accuracy
-    val trainingLosses = new util.ArrayList[Double]()
-    val trainingAccuracies = new util.ArrayList[Double]()
-
     // Train the model using Spark
     for (epoch <- 0 until numEpochs) {
       sparkModel.fit(trainingDataRDD)
-//      val trainingLoss = calculateLoss(sparkModel, trainingDataRDD)
-//      val trainingAccuracy = calculateAccuracy(sparkModel, trainingDataRDD)
-
-//      trainingLosses.add(trainingLoss)
-//      trainingAccuracies.add(trainingAccuracy)
-//
-//      println(s"Completed epoch ${epoch + 1}, Training Loss: $trainingLoss, Training Accuracy: $trainingAccuracy")
-
       println(s"Completed epoch ${epoch + 1}")
     }
     // Specify the file where the model will be saved
-    // Specify the file where the model will be saved
-    val locationToSave = new java.io.File("/Users/ronny/Desktop/CS441Cloud/Scala/Spark/trained_model.zip")
+    val locationToSave = new java.io.File("/Users/ronny/Desktop/CS441-HW1/Part2/trained_model.zip")
 
     // Whether or not to save the updater (optimizer state)
     val saveUpdater = true
@@ -133,16 +118,4 @@ object SparkLLMTraining {
     // Parallelize DataSets as an RDD
     sc.parallelize(dataSets)
   }
-
-
-//  class GradientNormLogger(listenerFrequency: Int) extends BaseTrainingListener {
-//    override def epochDone(model: Model, epoch: Int): Unit = {
-//      // Get the gradients from the model
-//      val gradient: INDArray = model.getGradient().gradient()
-//
-//      // Compute the L2 norm of the gradients
-//      val l2Norm = gradient.norm2Number().doubleValue()
-//      println(s"Epoch: $epoch, Gradient Norm: $l2Norm")
-//    }
-//  }
 }
