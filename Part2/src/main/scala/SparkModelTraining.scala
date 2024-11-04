@@ -29,11 +29,6 @@ object SparkModelTraining {
     val sc = spark.sparkContext
     val hadoopConfig = sc.hadoopConfiguration
 
-
-//    hadoopConfig.set("fs.s3a.access.key", ConfigLoader.s3AccessKey)
-//    hadoopConfig.set("fs.s3a.secret.key", ConfigLoader.s3SecretKey)
-//    hadoopConfig.set("fs.s3a.endpoint", ConfigLoader.s3Endpoint)
-
     logger.info("Starting model training with Spark and DL4J.")
 
     // Define paths for model and statistics file on S3
@@ -43,10 +38,7 @@ object SparkModelTraining {
     val localStatsPath = new Path(ConfigLoader.localLogPath)
     val modelOutputPath = new Path(localModelPath)
 
-//    val fs = FileSystem.get(new URI(modelPath), hadoopConfig)
     val fs = FileSystem.get(new URI(localModelPath), hadoopConfig)
-//    val fs = FileSystem.getLocal(hadoopConfig)
-//    val writer = new BufferedWriter(new OutputStreamWriter(fs.create(statsPath, true)))
     val writer = new BufferedWriter(new OutputStreamWriter(fs.create(localStatsPath, true)))
     writer.write("Training statistics:\n")
     writer.write(s"Sliding Windows Tensor Shape: ${slidingWindowsTensor.shape.mkString(", ")}\n")

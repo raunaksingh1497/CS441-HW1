@@ -1,7 +1,9 @@
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
+import org.slf4j.LoggerFactory
 
 object mainApp {
+  private val logger = LoggerFactory.getLogger(getClass)
 
   def main(args: Array[String]): Unit = {
     val spark = SparkSession.builder()
@@ -10,17 +12,24 @@ object mainApp {
       .config("spark.hadoop.fs.defaultFS", "file:///")
       .getOrCreate()
 
+    logger.info("Spark session created successfully.")
+
     try {
       val inputFilePath = ConfigLoader.localInputFilePath
-//      val modelPath = ConfigLoader.s3ModelPath
       val modelPath = ConfigLoader.localModelPath
 
-      // Step 1: Generate sliding windows tensor from input data
-      val slidingWindowsTensor = SlidingWindow.processSlidingWindows(spark, inputFilePath)
+      logger.info(s"Input file path: $inputFilePath")
+      logger.info(s"Model path: $modelPath")
 
+      // Step 1: Generate sliding windows tensor from input data
+      logger.info("Generating sliding windows tensor from input data.")
+      val slidingWindowsTensor = SlidingWindow.processSlidingWindows(spark, inputFilePath)
+      logger.info("Sliding windows tensor generated successfully.")
 
       // Step 2: Train a model using the generated tensor
+      logger.info("Starting model training with the generated tensor.")
       SparkModelTraining.trainWithTensor(spark, slidingWindowsTensor)
+      logger.info("Model training completed successfully.")
 
       // Example input embeddings for inference after training
       val inputEmbeddings = Array(
@@ -29,14 +38,18 @@ object mainApp {
       )
 
       // Step 3: Run inference on the trained model
+      logger.info("Running inference on the trained model.")
       val predictedEmbedding = LLMInference.predictNextEmbedding(modelPath, inputEmbeddings)
+      logger.info("Inference completed successfully.")
       println("Predicted next embedding: " + predictedEmbedding.mkString("[", ", ", "]"))
-
 
     } catch {
       case e: Exception =>
-        println(s"An error occurred: ${e.getMessage}")
+        logger.error(s"An error occurred: ${e.getMessage}", e)
         e.printStackTrace()
+    } finally {
+      spark.stop()
+      logger.info("Spark session stopped.")
     }
   }
 }
