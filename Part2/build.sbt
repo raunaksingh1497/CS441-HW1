@@ -5,7 +5,7 @@ ThisBuild / scalaVersion := "2.12.18"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "Part2",
+    name := "SparkLLM",
 
     libraryDependencies ++= Seq(
       "org.apache.spark" %% "spark-core" % "3.3.0",
@@ -20,18 +20,19 @@ lazy val root = (project in file("."))
       "org.nd4j" % "nd4j-native" % "1.0.0-M2.1",
       "org.nd4j" % "nd4j-api" % "1.0.0-M2.1",
       "org.nd4j" % "nd4j-native-platform" % "1.0.0-M2.1",
-      // Hadoop JAR
-      "org.apache.hadoop" % "hadoop-client-api" % "3.3.6",
-      "org.slf4j" % "slf4j-api" % "1.7.36"
+      // Hadoop and AWS dependencies
+      "org.apache.hadoop" % "hadoop-aws" % "3.3.6", // Compatible version of Hadoop for S3
+      "org.apache.hadoop" % "hadoop-common" % "3.3.6", // Required for hadoop-aws
+      "com.amazonaws" % "aws-java-sdk" % "1.12.300", // AWS SDK version (use latest stable)
+      "org.slf4j" % "slf4j-api" % "1.7.36",
+
+      "com.typesafe" % "config" % "1.4.1",
+
+      "org.scalatest" %% "scalatest" % "3.2.9" % Test
     ),
 
-//    assemblyMergeStrategy in assembly := {
-//      case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.first
-//      case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-//      case x => MergeStrategy.first
-//    }
     assembly / assemblyMergeStrategy := {
-      case PathList("META-INF", xs @ _*) =>    xs match {
+      case PathList("META-INF", xs @ _*) => xs match {
         case "MANIFEST.MF" :: Nil => MergeStrategy.discard
         case "services" :: _ => MergeStrategy.concat
         case _ => MergeStrategy.discard
@@ -41,5 +42,3 @@ lazy val root = (project in file("."))
       case _ => MergeStrategy.first
     }
   )
-
-
