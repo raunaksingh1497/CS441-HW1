@@ -27,7 +27,7 @@ class SparkLLMTrainingSpec extends AnyFunSuite with BeforeAndAfterEach{
 
   test("createModel should return a MultiLayerNetwork") {
     val tensor: INDArray = Nd4j.create(Array.ofDim[Float](10, 5, 3))
-    val model: MultiLayerNetwork = SparkLLMTraining.createModel(tensor)
+    val model: MultiLayerNetwork = SparkModelTraining.createModel(tensor)
     assert(model != null)
     assert(model.getLayer(0).conf().getLayer.getClass.getSimpleName == "LSTM")
     assert(model.getLayer(1).conf().getLayer.getClass.getSimpleName == "RnnOutputLayer")
@@ -35,9 +35,9 @@ class SparkLLMTrainingSpec extends AnyFunSuite with BeforeAndAfterEach{
 
   test("captureGradientNormsLocally should return a valid gradient norm") {
     val tensor = Nd4j.rand(10, 5, 3)
-    val trainingData = SparkLLMTraining.createTrainingDataFromTensor(spark.sparkContext, tensor)
-    val model = SparkLLMTraining.createModel(tensor)
-    val gradientNorm = SparkLLMTraining.captureGradientNormsLocally(model, trainingData)
+    val trainingData = SparkModelTraining.createTrainingDataFromTensor(spark.sparkContext, tensor)
+    val model = SparkModelTraining.createModel(tensor)
+    val gradientNorm = SparkModelTraining.captureGradientNormsLocally(model, trainingData)
     assert(gradientNorm > 0.0, "Gradient norm should be positive.")
   }
 }

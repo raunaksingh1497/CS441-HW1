@@ -22,7 +22,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.JavaConverters._
 import org.slf4j.LoggerFactory
 
-object SparkLLMTraining {
+object SparkModelTraining {
   private val logger = LoggerFactory.getLogger(getClass)
 
   def trainWithTensor(spark: SparkSession, slidingWindowsTensor: INDArray): Unit = {

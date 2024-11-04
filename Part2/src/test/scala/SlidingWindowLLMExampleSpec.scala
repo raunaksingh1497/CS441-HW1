@@ -25,7 +25,7 @@ class SlidingWindowLLMExampleSpec extends AnyFunSuite with BeforeAndAfterEach{
 
   test("processSlidingWindows should return a valid tensor") {
     val inputFilePath = ConfigLoader.testInput;
-    val tensor: INDArray = SlidingWindowLLMExample.processSlidingWindows(spark,inputFilePath)
+    val tensor: INDArray = SlidingWindow.processSlidingWindows(spark,inputFilePath)
     assert(tensor != null)
     assert(tensor.shape().length == 3, "Tensor should have 3 dimensions")
   }
@@ -33,7 +33,7 @@ class SlidingWindowLLMExampleSpec extends AnyFunSuite with BeforeAndAfterEach{
   test("parseInputToMatrix should parse file correctly") {
     val sc = spark.sparkContext
     val inputFilePath = ConfigLoader.testInput;
-    val matrix = SlidingWindowLLMExample.parseInputToMatrix(inputFilePath, sc)
+    val matrix = SlidingWindow.parseInputToMatrix(inputFilePath, sc)
     assert(matrix.length > 0, "Matrix should not be empty")
     assert(matrix.head.length > 0, "Matrix rows should not be empty")
   }

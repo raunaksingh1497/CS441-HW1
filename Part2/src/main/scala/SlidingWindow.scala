@@ -4,7 +4,7 @@ import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
 import org.slf4j.LoggerFactory
 
-object SlidingWindowLLMExample {
+object SlidingWindow {
   private val logger = LoggerFactory.getLogger(getClass)
 
   // Method to process sliding windows and return the tensor

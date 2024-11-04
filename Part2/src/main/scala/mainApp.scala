@@ -16,11 +16,11 @@ object mainApp {
       val modelPath = ConfigLoader.localModelPath
 
       // Step 1: Generate sliding windows tensor from input data
-      val slidingWindowsTensor = SlidingWindowLLMExample.processSlidingWindows(spark, inputFilePath)
+      val slidingWindowsTensor = SlidingWindow.processSlidingWindows(spark, inputFilePath)
 
 
       // Step 2: Train a model using the generated tensor
-      SparkLLMTraining.trainWithTensor(spark, slidingWindowsTensor)
+      SparkModelTraining.trainWithTensor(spark, slidingWindowsTensor)
 
       // Example input embeddings for inference after training
       val inputEmbeddings = Array(
