@@ -19,6 +19,7 @@ class SlidingWindowLLMExampleSpec extends AnyFunSuite with BeforeAndAfterEach{
     // Stop SparkSession after each test
     if (spark != null) {
       spark.stop()
+      SparkSession.clearActiveSession()
       spark = null // Clear reference for garbage collection
     }
   }

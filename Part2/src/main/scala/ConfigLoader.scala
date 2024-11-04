@@ -30,5 +30,5 @@ object ConfigLoader {
   val sparkDriverMemory: String = if (config.hasPath("spark.driver.memory")) config.getString("spark.driver.memory") else "2g"
 
   // Test Input
-  val testInput: String = if (config.hasPath("testInput")) config.getString("testInput") else "/Users/ronny/Desktop/CS441-HW1/Part2/src/main/resources/Input/input.txt"
+  val testInput: String = if (config.hasPath("testInput")) config.getString("testInput") else "/Users/ronny/Desktop/CS441-HW1/Part2/src/test/scala/resources/Input/input.txt"
 }
