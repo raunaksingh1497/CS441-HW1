@@ -1,0 +1,17 @@
+syntax = "proto3";
+package com.example.protobuf;
+
+// Define a request message with just a message
+message Request {
+  string query = 1;
+}
+
+// Define a response message with just a message and statusCode
+message Response {
+  string query_result = 1;
+  int32 statusCode = 2;
+  string errorMessage = 3;
+  string errorType = 4;  // Include if needed
+  string requestId = 5;  // Include if needed
+  repeated string stackTrace = 6;  // Include if needed
+}
