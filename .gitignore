@@ -8,3 +8,4 @@ Part3/target
 Part3/.DS_Store
 Part3/.idea
 Part3/.bsp
+Part3/src/main/resources/application.conf
