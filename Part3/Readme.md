@@ -7,6 +7,11 @@
 ## Project Overview
 This part of the project integrates the previously developed Large Language Model (LLM) with cloud services. The goal is to use Amazon Bedrock, a managed AI service from AWS, to enhance the functionality of the LLM. The LLM processes queries from the Ollama client, performs necessary computations, and then uses Amazon Bedrock for advanced language tasks such as text generation and summarization.
 
+### Video
+https://drive.google.com/file/d/10sTK0YP0KyIyjX9gldB25qg7vPook8d0/view?usp=sharing 
+
+To compile and run the project using SBT, use the following commands:
+
 ### Commands to Run the Project
 
 To compile and run the project using SBT, use the following commands:
